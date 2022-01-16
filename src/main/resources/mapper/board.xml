@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lhw.portfolio.repository.BoardRepository">
+
+
+	<select id="selectTotalRecordCount" resultType="int">
+		SELECT COUNT(*)
+		  FROM BOARD
+	</select>
+
+	<select id="selectBoardList" parameterType="Map" resultType="com.lhw.portfolio.domain.Board">
+		SELECT B.NO, B.TITLE, B.CONTENT, B.CREATED, B.LASTMODIFIED
+		  FROM (SELECT ROWNUM AS RN, A.NO, A.TITLE, A.CONTENT, A.CREATED, A.LASTMODIFIED
+				  FROM (SELECT NO, TITLE, CONTENT, CREATED, LASTMODIFIED
+						  FROM BOARD
+				 		 ORDER BY NO DESC ) A) B
+	  	 WHERE B.RN BETWEEN #{beginRecord} AND #{endRecord}		 		 
+	</select>
+	
+	<insert id="insertBoard" parameterType="com.lhw.portfolio.domain.Board">
+		INSERT INTO BOARD
+		VALUES (board_SEQ.NEXTVAL, #{title}, #{content}, SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="selectBoardByNo" parameterType="Long" resultType="com.lhw.portfolio.domain.Board">
+		SELECT NO, TITLE, CONTENT, CREATED, LASTMODIFIED
+		  FROM BOARD
+ 		 WHERE NO = #{no}
+	</select> 
+	
+	<update id="updateBoard" parameterType="com.lhw.portfolio.domain.Board" >
+		UPDATE BOARD
+		   SET TITLE = #{title}, CONTENT = #{content}, LASTMODIFIED = SYSDATE
+		 WHERE NO = #{no}  
+	</update>
+	
+	<delete id="deleteBoard" parameterType="Long">
+		DELETE
+		  FROM BOARD
+		 WHERE NO = #{no} 
+	</delete>
+
+</mapper>
